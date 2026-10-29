@@ -25,7 +25,7 @@ ENV TEXMFVAR=/var/lib/overleaf/tmp/texmf-var
 
 # Set ENV to noninteractive
 # -----------------------------------
-ENV DEBIAN_FRONTEND noninteractive
+ENV DEBIAN_FRONTEND=noninteractive
 
 # Update to ensure dependencies are updated
 # ------------------------------------------

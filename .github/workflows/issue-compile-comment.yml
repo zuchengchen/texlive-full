@@ -22,13 +22,13 @@ permissions:
 
 jobs:
   comment:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     # 仅当工作流 A 真正跑完（非 skipped/cancelled/failure）才评论，避免对被跳过的 run 产生空操作
     # Only comment when workflow A actually succeeded (not skipped/cancelled/failed), to avoid no-op runs
     if: github.event.workflow_run.conclusion == 'success'
     steps:
       - name: Download workflow A artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         continue-on-error: true
         with:
           run-id: ${{ github.event.workflow_run.id }}

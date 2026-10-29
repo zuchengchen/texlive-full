@@ -27,7 +27,7 @@ jobs:
       matrix:
         tex_version: ${{ fromJson(inputs.texlive_versions || '["2020", "2021", "2022", "2023", "2024", "2025", "2026"]') }}
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Login to GitHub Container Registry

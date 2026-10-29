@@ -27,7 +27,7 @@ jobs:
         platform: [linux/amd64, linux/arm64]
         include:
           - platform: linux/amd64
-            runner: ubuntu-latest
+            runner: ubuntu-24.04
             platform_pair: amd64
             texlive_bin_arch: x86_64-linux
           - platform: linux/arm64
@@ -52,7 +52,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
         with:
           driver-opts: |
             env.BUILDKIT_STEP_LOG_MAX_SIZE=-1
@@ -82,7 +82,7 @@ jobs:
           echo "${digest#sha256:}" > "${{ runner.temp }}/digests/${{ matrix.tex-version }}.${{ matrix.platform_pair }}.txt"
 
       - name: Upload digest
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: digests-${{ matrix.tex-version }}-${{ matrix.platform_pair }}
           path: ${{ runner.temp }}/digests/${{ matrix.tex-version }}.${{ matrix.platform_pair }}.txt
@@ -90,13 +90,13 @@ jobs:
           retention-days: 1
 
   merge-basic:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs:
       - build-basic
 
     steps:
       - name: Download all digests
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           path: ${{ runner.temp }}/digests
           pattern: digests-*
@@ -110,7 +110,7 @@ jobs:
           password: ${{ secrets.ORGTOKEN || secrets.GITHUB_TOKEN }}
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
         with:
           driver-opts: |
             env.BUILDKIT_STEP_LOG_MAX_SIZE=-1

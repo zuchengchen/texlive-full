@@ -31,7 +31,7 @@ RUN mkdir -p /tmp/texmf-var && chmod -R 777 /tmp
 
 # Set ENV to noninteractive
 # -----------------------------------
-ENV DEBIAN_FRONTEND noninteractive
+ENV DEBIAN_FRONTEND=noninteractive
 
 # Update to ensure dependencies are updated
 # ------------------------------------------
