@@ -6,9 +6,13 @@ jobs <- 4
 Sys.setenv(MAKEFLAGS = paste0("-j", jobs))
 cat("MAKEFLAGS =", Sys.getenv("MAKEFLAGS"), "\n")
 
+# Posit 按 User-Agent 决定给预编译二进制包还是源码包，R 默认的 UA 拿到的是源码包
+options(HTTPUserAgent = sprintf("R/%s R (%s)", getRversion(),
+  paste(getRversion(), R.version["platform"], R.version["arch"], R.version["os"])))
+
 # 如果没有 remotes 就安装
 if (!requireNamespace("remotes", quietly = TRUE))
-  install.packages("remotes", repos="https://packagemanager.posit.co/cran/2026-06-25")
+  install.packages("remotes", repos="https://packagemanager.posit.co/cran/__linux__/noble/2026-06-25")
 
 
 # 安装 BiocManager 包
@@ -16,7 +20,7 @@ if (!requireNamespace("BiocManager", quietly = TRUE))
   remotes::install_version(
     "BiocManager",
     version = "1.30.27",
-    repos = "https://packagemanager.posit.co/cran/2026-06-25",
+    repos = "https://packagemanager.posit.co/cran/__linux__/noble/2026-06-25",
     lib = "/usr/local/lib/R/site-library",
     Ncpus = parallel::detectCores(),
     upgrade = "never"
@@ -83,7 +87,9 @@ lines <- lines[nchar(lines) > 0]
 pkg <- sub(" .*", "", lines)
 ver <- sub(".* ", "", lines)
 
-repo <- "https://packagemanager.posit.co/cran/2026-06-25"
+# Posit 为 Ubuntu 24.04 (noble) 提供同一快照的预编译二进制包，免去源码编译；
+# 没有预编译版本的包会自动回落成源码包
+repo <- "https://packagemanager.posit.co/cran/__linux__/noble/2026-06-25"
 bioc_repos <- BiocManager::repositories()
 bioc_avail <- rownames(available.packages(repos = bioc_repos[names(bioc_repos) != "CRAN"]))
 is_bioc <- pkg %in% bioc_avail
