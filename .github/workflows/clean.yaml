@@ -8,6 +8,7 @@ on:
 
 jobs:
   clean-ghcr-texlive:
+    if: github.repository_owner == 'ayaka-notes'
     runs-on: ubuntu-latest
     steps:
       - name: Delete 'untaged' containers

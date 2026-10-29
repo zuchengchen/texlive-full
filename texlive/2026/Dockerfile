@@ -15,7 +15,7 @@ FROM ${BASE_IMAGE}
 LABEL \
     org.opencontainers.image.title="Docker Image of TeXLive" \
     org.opencontainers.image.authors="ayaka-notes <public@ayaka.space>" \
-    org.opencontainers.image.source="https://github.com/ayaka-notes/texlive-full" \
+    org.opencontainers.image.source="https://github.com/zuchengchen/texlive-full" \
     org.opencontainers.image.licenses="MIT" \
     org.opencontainers.image.description="Overleaf TeXLive Image by ayaka-notes"
 

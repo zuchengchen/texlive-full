@@ -6,7 +6,7 @@ on:
       ubuntu_versions:
         description: JSON array of Base image variants (Ubuntu version or TeX Live year, e.g., '["24.04", "2026"]')
         required: false
-        default: '["20.04", "22.04", "24.04", "2026"]'
+        default: '["2026"]'
       base_cache:
         description: Whether to enable cache for Base image builds (true/false)
         required: true
@@ -15,16 +15,20 @@ on:
       texlive_versions:
         description: JSON array of TeX Live versions to build (e.g., '["2025", "2026"]')
         required: false
-        default: '["2020", "2021", "2022", "2023", "2024", "2025", "2026"]'
+        default: '["2026"]'
       texlive_cache:
         description: Whether to enable cache for TeX Live image builds (true/false)
         required: true
         type: boolean
         default: true
 
+permissions:
+  contents: read
+  packages: write
+
 env:
   DOCKER_REGISTRY: ghcr.io
-  BASE_IMAGE_NAME: ayaka-notes/texlive-full
+  BASE_IMAGE_NAME: ${{ github.repository_owner }}/texlive-full
   BASE_IMAGE_TAG_PREFIX: base
 
 jobs:
@@ -48,7 +52,7 @@ jobs:
         uses: actions/checkout@main
         with:
           submodules: true
-          token: ${{ secrets.ORGTOKEN }}
+          token: ${{ secrets.ORGTOKEN || github.token }}
 
       - name: Update for Latest
         run: |
@@ -147,8 +151,8 @@ jobs:
 
           docker buildx imagetools create \
             --annotation "index:org.opencontainers.image.title=texlive-full-base" \
-            --annotation "index:org.opencontainers.image.description=Base image for TeX Live full image for Overleaf, maintained by ayaka-notes. Multi-arch support for amd64 and arm64." \
-            --annotation "index:org.opencontainers.image.source=https://github.com/ayaka-notes/texlive-full" \
+            --annotation "index:org.opencontainers.image.description=Base image for TeX Live full image for Overleaf, maintained by ${{ github.repository_owner }}. Multi-arch support for amd64 and arm64." \
+            --annotation "index:org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}" \
             --annotation "index:org.opencontainers.image.version=${{ matrix.ubuntu_version }}" \
             -t ${{ env.DOCKER_REGISTRY }}/${{ env.BASE_IMAGE_NAME }}:${{ env.BASE_IMAGE_TAG_PREFIX }}-${{ matrix.ubuntu_version }} \
             ${{ env.DOCKER_REGISTRY }}/${{ env.BASE_IMAGE_NAME }}:${{ env.BASE_IMAGE_TAG_PREFIX }}-${{ matrix.ubuntu_version }}-amd64@sha256:${AMD64_DIGEST} \
@@ -187,7 +191,7 @@ jobs:
         uses: actions/checkout@main
         with:
           submodules: true
-          token: ${{ secrets.ORGTOKEN }}
+          token: ${{ secrets.ORGTOKEN || github.token }}
 
       - name: Update for Latest
         run: |
@@ -216,6 +220,7 @@ jobs:
           platforms: ${{ matrix.platform }}
           build-args: |
             TEXLIVE_BIN_ARCH=${{ matrix.texlive_bin_arch }}
+            BASE_IMAGE=${{ env.DOCKER_REGISTRY }}/${{ env.BASE_IMAGE_NAME }}:${{ env.BASE_IMAGE_TAG_PREFIX }}-${{ matrix.tex-version }}
           push: true
           tags: ${{ env.DOCKER_REGISTRY }}/${{ env.BASE_IMAGE_NAME }}:${{ matrix.tex-version }}.1.${{ matrix.platform_pair }}
           outputs: type=image,name-canonical=true,push=true,oci-mediatypes=true
@@ -281,8 +286,8 @@ jobs:
 
             docker buildx imagetools create \
               --annotation "index:org.opencontainers.image.title=texlive-full" \
-              --annotation "index:org.opencontainers.image.description=TeX Live ${year}.1 full image for Overleaf, maintained by ayaka-notes. Multi-arch support for amd64 and arm64." \
-              --annotation "index:org.opencontainers.image.source=https://github.com/ayaka-notes/texlive-full" \
+              --annotation "index:org.opencontainers.image.description=TeX Live ${year}.1 full image for Overleaf, maintained by ${{ github.repository_owner }}. Multi-arch support for amd64 and arm64." \
+              --annotation "index:org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}" \
               --annotation "index:org.opencontainers.image.version=${year}.1" \
               -t ${{ env.DOCKER_REGISTRY }}/${{ env.BASE_IMAGE_NAME }}:${year}.1 \
               ${{ env.DOCKER_REGISTRY }}/${{ env.BASE_IMAGE_NAME }}:${year}.1.amd64@sha256:${AMD_DIGEST} \

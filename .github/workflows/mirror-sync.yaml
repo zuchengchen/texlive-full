@@ -20,6 +20,7 @@ env:
 
 jobs:
   sync:
+    if: github.repository_owner == 'ayaka-notes'
     strategy:
       fail-fast: false
       max-parallel: 6
