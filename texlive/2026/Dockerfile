@@ -5,9 +5,10 @@
 # Use base image, see texlive/base
 # -----------------------------------
 # tlnet snapshot cache (flat data image), mounted during the TeX Live install
+ARG BASE_IMAGE=ghcr.io/ayaka-notes/texlive-full:base-2026
 FROM ghcr.io/ayaka-notes/tlnet-cache:2026 AS tlnet
 
-FROM ghcr.io/ayaka-notes/texlive-full:base-2026
+FROM ${BASE_IMAGE}
 
 # LABEL
 # -----------------------------------
@@ -53,7 +54,11 @@ RUN --mount=type=bind,from=tlnet,source=/tlnet,target=/tlnet \
 &&  echo "tlpdbopt_autobackup 0" >> /install-tl-unx/texlive.profile \
 &&  echo "tlpdbopt_install_docfiles 0" >> /install-tl-unx/texlive.profile \
 &&  echo "tlpdbopt_install_srcfiles 0" >> /install-tl-unx/texlive.profile \
-&&  echo "selected_scheme scheme-full" >> /install-tl-unx/texlive.profile \
+&&  echo "selected_scheme scheme-custom" >> /install-tl-unx/texlive.profile \
+# scheme-full minus collection-context, collection-games and collection-music
+&&  for c in basic bibtexextra binextra fontsextra fontsrecommended fontutils formatsextra humanities langarabic langchinese langcjk langcyrillic langczechslovak langenglish langeuropean langfrench langgerman langgreek langitalian langjapanese langkorean langother langpolish langportuguese langspanish latex latexextra latexrecommended luatex mathscience metapost pictures plaingeneric pstricks publishers texworks xetex; do \
+      echo "collection-$c 1" >> /install-tl-unx/texlive.profile; \
+    done \
     \
 &&  /install-tl-unx/install-tl \
       -profile /install-tl-unx/texlive.profile \

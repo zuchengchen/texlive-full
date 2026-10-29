@@ -67,11 +67,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Install dependencies
 # --------------------
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    apt base-files base-passwd bash bsdutils chktex coinor-libcgl-dev coinor-libcgl1 coinor-libclp-dev coinor-libclp1 coinor-libcoinutils-dev coinor-libcoinutils3v5 coinor-libosi-dev coinor-libosi1v5 coinor-libsymphony-dev coinor-libsymphony3 coreutils culmus dash debconf debianutils default-jdk-headless diffutils dirmngr dot2tex dpkg e2fsprogs findutils gcc-14-base ghostscript gnuplot gpgv graphviz grep gsfonts gzip hostname imagemagick init-system-helpers inkscape libacl1 libamd3 libapt-pkg6.0t64 libassuan0 libattr1 libaudit-common libaudit1 libblkid1 libbz2-1.0 libc-bin libc6 libcap-ng0 libcap2 libcolamd3 libcom-err2 libcrypt1 libcurl4t64 libdebconfclient0 libexpat1 libext2fs2t64 libffi8 libfftw3-bin libfont-ttf-perl libfontconfig1 libfreetype6 libgcc-s1 libgcrypt20 libgdal34t64 libglpk40 libglut3.12 libgmp10 libgnutls30t64 libgpg-error0 libgsl27 libhogweed6t64 libidn12 libidn2-0 libijs-0.35 libio-string-perl libjbig2dec0 libjpeg8 liblcms2-2 liblz4-1 liblzma5 libmagick++-6.q16-9t64 libmagick++-6.q16hdri-9t64 libmd0 libmount1 libncurses6 libncursesw6 libnettle8t64 libnpth0t64 libopenjp2-7 libosmesa6 libp11-kit0 libpam-modules libpam-modules-bin libpam-runtime libpam0g libpaper1 libpcre2-8-0 libpdf-api2-perl libpdf-api2-xs-perl libpng16-16t64 libproc2-0 libseccomp2 libselinux1 libsemanage-common libsemanage2 libsepol2 libsmartcols1 libss2 libssl3t64 libstdc++6 libsuitesparseconfig7 libsystemd0 libtasn1-6 libtiff6 libtinfo6 libudev1 libudunits2-0 libunistring5 libuuid1 libxml2 libxxhash0 libzstd1 login logsave mawk mount ncurses-base ncurses-bin passwd perl perl-base procps python-is-python3 python3-numpy python3-pdfrw python3-pygments python3-scipy python3-simpy qpdf sed sensible-utils software-properties-common strace sysvinit-utils t1-cyrillic tar time ttf-bitstream-vera ubuntu-keyring unminimize util-linux wget zlib1g\
+    apt base-files base-passwd bash bsdutils chktex coreutils culmus dash debconf debianutils diffutils dirmngr dot2tex dpkg e2fsprogs findutils gcc-14-base ghostscript gnuplot-nox gpgv graphviz grep gsfonts gzip hostname imagemagick init-system-helpers inkscape libacl1 libamd3 libapt-pkg6.0t64 libassuan0 libattr1 libaudit-common libaudit1 libblkid1 libbz2-1.0 libc-bin libc6 libcap-ng0 libcap2 libcolamd3 libcom-err2 libcrypt1 libcurl4t64 libdebconfclient0 libexpat1 libext2fs2t64 libffi8 libfftw3-bin libfont-ttf-perl libfontconfig1 libfreetype6 libgcc-s1 libgcrypt20 libglpk40 libgmp10 libgnutls30t64 libgpg-error0 libgsl27 libhogweed6t64 libidn12 libidn2-0 libijs-0.35 libio-string-perl libjbig2dec0 libjpeg8 liblcms2-2 liblz4-1 liblzma5 libmagick++-6.q16-9t64 libmagick++-6.q16hdri-9t64 libmd0 libmount1 libncurses6 libncursesw6 libnettle8t64 libnpth0t64 libopenjp2-7 libp11-kit0 libpam-modules libpam-modules-bin libpam-runtime libpam0g libpaper1 libpcre2-8-0 libpdf-api2-perl libpdf-api2-xs-perl libpng16-16t64 libproc2-0 libseccomp2 libselinux1 libsemanage-common libsemanage2 libsepol2 libsmartcols1 libss2 libssl3t64 libstdc++6 libsuitesparseconfig7 libsystemd0 libtasn1-6 libtiff6 libtinfo6 libudev1 libudunits2-0 libunistring5 libuuid1 libxml2 libxxhash0 libzstd1 login logsave mawk mount ncurses-base ncurses-bin passwd perl perl-base procps python-is-python3 python3-numpy python3-pdfrw python3-pygments python3-scipy python3-simpy qpdf sed sensible-utils software-properties-common strace sysvinit-utils t1-cyrillic tar time ttf-bitstream-vera ubuntu-keyring unminimize util-linux wget zlib1g\
     make cmake build-essential gfortran\
     gnupg ca-certificates dirmngr \
-    libblas-dev liblapack-dev libcurl4-openssl-dev libssl-dev libxml2-dev zlib1g-dev libfontconfig1-dev libmagick++-dev libudunits2-dev libgdal-dev\
-    libfftw3-dev libgmp-dev libgsl0-dev libharfbuzz-dev libfribidi-dev libmpfr-dev libuv1-dev jags\
+    libblas-dev liblapack-dev libcurl4-openssl-dev libssl-dev libxml2-dev zlib1g-dev libfontconfig1-dev libmagick++-dev\
+    libfftw3-dev libgmp-dev libgsl0-dev libharfbuzz-dev libfribidi-dev libmpfr-dev libuv1-dev\
     && rm -rf /var/lib/apt/lists/*
 
 # Install R at the exact upstream version, then hold it
@@ -103,16 +103,24 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY ./extrafonts /usr/share/fonts/
 
 # Install fonts
+# 只装常用字体，不再 `apt search ^fonts` 全量安装（535 个包）和下载整个 Google Fonts（~7GB）
+# TeX Live 自带同名同字重的（Plex、CMU、EB Garamond、Libertine、Charis、Doulos、Amiri、Carlito、Caladea、
+# TeX Gyre、Latin Modern）不再重复安装，09-texlive.conf 让 fontconfig 能找到 TeX Live 里的这些字体
 # --------------------
 RUN echo "ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true" | debconf-set-selections \
-    && apt-get update && apt-get install -y ttf-mscorefonts-installer \
-    && apt update && apt search ^fonts  | grep -o '^fonts[^/]*' | grep -vE '^(fonts-ubuntu-classic)$' | xargs apt-get install -y \
-    && wget --quiet https://github.com/google/fonts/archive/main.tar.gz -O gf.tar.gz \
+    && apt-get update && apt-get install -y --no-install-recommends \
+    ttf-mscorefonts-installer \
+    fonts-noto-core fonts-noto-ui-core fonts-noto-mono fonts-noto-cjk fonts-noto-color-emoji \
+    fonts-liberation fonts-liberation2 fonts-dejavu-core fonts-dejavu-extra fonts-freefont-ttf fonts-freefont-otf \
+    fonts-urw-base35 fonts-croscore \
+    fonts-roboto fonts-open-sans fonts-lato fonts-ubuntu fonts-cantarell \
+    fonts-firacode fonts-inconsolata fonts-hack fonts-jetbrains-mono fonts-cascadia-code \
+    fonts-stix fonts-lyx fonts-mathjax \
+    fonts-sil-gentiumplus fonts-symbola fonts-font-awesome \
+    fonts-arphic-ukai fonts-arphic-uming fonts-arphic-gbsn00lp fonts-arphic-gkai00mp fonts-arphic-bsmi00lp fonts-arphic-bkai00mp \
+    fonts-wqy-microhei fonts-wqy-zenhei fonts-lxgw-wenkai \
+    fonts-ipafont fonts-ipaexfont fonts-nanum fonts-unfonts-core \
     && rm -rf /var/lib/apt/lists/* \
-    && tar -xf gf.tar.gz \
-    && mkdir -p /usr/share/fonts/truetype/google-fonts \
-    && find $PWD/fonts-main/ -name "*.ttf" -exec install -m644 {} /usr/share/fonts/truetype/google-fonts/ \; || return 1 \
-    && rm -rf gf.tar.gz fonts-main \
     && fc-cache -f && rm -rf /var/cache/*
 
 # Install R packages (one shot, non-interactive, pinned repo)
